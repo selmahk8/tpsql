@@ -1,0 +1,52 @@
+-- Function 1:
+CREATE OR REPLACE FUNCTION GET_NB_WORKERS(FACTORY_ID NUMBER) RETURN NUMBER AS
+    v_num_workers NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_num_workers
+    FROM WORKERS_FACTORY_1
+    WHERE factory_id = FACTORY_ID
+    UNION ALL
+    SELECT COUNT(*)
+    FROM WORKERS_FACTORY_2
+    WHERE factory_id = FACTORY_ID;
+
+    RETURN v_num_workers;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 0
+END;
+/
+
+-- Function 2: 
+CREATE OR REPLACE FUNCTION GET_NB_BIG_ROBOTS RETURN NUMBER AS
+    v_num_big_robots NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_num_big_robots
+    FROM ROBOTS_HAS_SPARE_PARTS r
+    GROUP BY r.robot_id
+    HAVING COUNT(*) > 3;
+
+    RETURN v_num_big_robots;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 0;
+END;
+/
+
+-- Function 3:
+CREATE OR REPLACE FUNCTION GET_BEST_SUPPLIER RETURN VARCHAR2 AS
+    v_supplier_name VARCHAR2(100);
+BEGIN
+    SELECT supplier_name
+    INTO v_supplier_name
+    FROM BEST_SUPPLIERS
+    WHERE ROWNUM = 1; 
+
+    RETURN v_supplier_name;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN NULL;
+END;
+/
